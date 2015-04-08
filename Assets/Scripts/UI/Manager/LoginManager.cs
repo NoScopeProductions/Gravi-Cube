@@ -1,4 +1,5 @@
-﻿using JetBrains.Annotations;
+﻿using System.Collections;
+using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.UI;
 using Parse;
@@ -19,21 +20,29 @@ namespace UI.Manager
         [UsedImplicitly]
         public void LoginAction()
         {
+            StartCoroutine(LoginCoroutine());
+        }
+
+        private IEnumerator LoginCoroutine()
+        {
             ParseUser.LogOut();
 
-            ParseUser.LogInAsync(_email.text, _password.text).ContinueWith(t =>
+            var loginTask = ParseUser.LogInAsync(_email.text, _password.text).ContinueWith(task =>
             {
-                if (t.IsFaulted || t.IsCanceled)
+                if (task.IsFaulted || task.IsCanceled)
                 {
                     // The login failed. Check the error to see why.
-
-                    Debug.LogError(t.Exception.Message);
-                }
-                else
-                {
-                    Debug.Log("Login Success");
+                    foreach (var exception in task.Exception.InnerExceptions)
+                    {
+                        Debug.LogError(exception.Message);
+                    }
                 }
             });
+
+            while (!loginTask.IsCompleted) yield return null;
+            Debug.Log("Login Successful");
+            gameObject.SetActive(false);
+
         }
     }
 }

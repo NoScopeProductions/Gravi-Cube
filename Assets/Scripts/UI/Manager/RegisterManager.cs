@@ -22,6 +22,8 @@ namespace UI.Manager
         [SerializeField, UsedImplicitly]
         private InputField _confirmPassword;
 
+        [SerializeField, UsedImplicitly]
+        private GameObject _loginPanel;
 
         [UsedImplicitly]
         public void RegisterAction()
@@ -46,15 +48,19 @@ namespace UI.Manager
 
             var signUpTask = user.SignUpAsync().ContinueWith(task =>
             {
-                if (task.IsFaulted || task.IsCanceled)
+                if (!task.IsFaulted && !task.IsCanceled) return;
+
+                foreach (var exception in task.Exception.InnerExceptions)
                 {
-                    throw task.Exception.Flatten();
+                    Debug.LogError(exception.Message);
                 }
             });
 
             while (!signUpTask.IsCompleted) yield return null;
 
             Debug.Log("Sign Up Successful");
+            _loginPanel.SetActive(true);
+            gameObject.SetActive(false);
         }
     }
 }
