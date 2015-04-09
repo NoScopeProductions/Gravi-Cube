@@ -3,7 +3,6 @@ using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.UI;
 using Parse;
-using System.Threading.Tasks;
 
 namespace UI.Manager
 {
@@ -19,6 +18,9 @@ namespace UI.Manager
 
         [SerializeField, UsedImplicitly]
         private GameObject _mainMenuPanel;
+
+        [SerializeField, UsedImplicitly]
+        private Text _errorText;
 
 
         [UsedImplicitly]
@@ -40,18 +42,15 @@ namespace UI.Manager
         
         private IEnumerator LoginCoroutine()
         {
-            var loginTask = ParseUser.LogInAsync(_email.text, _password.text).ContinueWith(task =>
-            {
-                if (!task.IsFaulted && !task.IsCanceled) return;
-
-                foreach (var exception in task.Exception.InnerExceptions)
-                {
-                    Debug.LogError(exception.Message);
-                }
-            });
+            _errorText.text = "";
+            var loginTask = ParseUser.LogInAsync(_email.text, _password.text);
 
             while (!loginTask.IsCompleted) yield return null;
-
+            if (loginTask.IsFaulted || loginTask.IsCanceled)
+            {
+                _errorText.text = "Invalid Login Attempt!";
+                yield break;
+            }
             ShowMainMenu();
         }
 
@@ -60,6 +59,13 @@ namespace UI.Manager
             Debug.Log("Login Successful");
             gameObject.SetActive(false);
             _mainMenuPanel.SetActive(true);
+        }
+
+        public void Show()
+        {
+            gameObject.SetActive(true);
+            _errorText.text = "";
+            _password.text = "";
         }
     }
 }
