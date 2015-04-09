@@ -1,35 +1,57 @@
-﻿using UnityEngine;
-using System.Collections;
-using UnityEngine.UI;
+﻿using JetBrains.Annotations;
+using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
-public class InputNavigator : MonoBehaviour
+namespace UI.Manager
 {
-    EventSystem system;
-
-    void Start()
+    [UsedImplicitly]
+    public class InputNavigator : MonoBehaviour
     {
-        system = EventSystem.current;// EventSystemManager.currentSystem;
+        private EventSystem _system;
 
-    }
-    // Update is called once per frame
-    void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Tab))
+        [SerializeField, UsedImplicitly]
+        private GameObject _loginPanel;
+
+        [SerializeField, UsedImplicitly]
+        private GameObject _registerPanel;
+
+        [UsedImplicitly]
+        void Start()
         {
-            Selectable next = system.currentSelectedGameObject.GetComponent<Selectable>().FindSelectableOnDown();
+            _system = EventSystem.current;
 
-            if (next != null)
+        }
+        
+        [UsedImplicitly]
+        void Update()
+        {
+            if (Input.GetKeyDown(KeyCode.Tab))
             {
+                var next = _system.currentSelectedGameObject.GetComponent<Selectable>().FindSelectableOnDown();
 
-                InputField inputfield = next.GetComponent<InputField>();
-                if (inputfield != null)
-                    inputfield.OnPointerClick(new PointerEventData(system));  //if it's an input field, also set the text caret
+                if (next != null)
+                {
 
-                system.SetSelectedGameObject(next.gameObject, new BaseEventData(system));
+                    var inputfield = next.GetComponent<InputField>();
+                    if (inputfield != null)
+                        inputfield.OnPointerClick(new PointerEventData(_system));
+
+                    _system.SetSelectedGameObject(next.gameObject, new BaseEventData(_system));
+                }
             }
-            //else Debug.Log("next nagivation element not found");
 
+            if (Input.GetKeyDown(KeyCode.Return))
+            {
+                if (_loginPanel.activeSelf)
+                {
+                    _loginPanel.GetComponent<LoginManager>().LoginAction();
+                }
+                else if (_registerPanel.activeSelf)
+                {
+                    _registerPanel.GetComponent<RegisterManager>().RegisterAction();
+                }
+            }
         }
     }
 }
