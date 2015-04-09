@@ -17,32 +17,49 @@ namespace UI.Manager
         [SerializeField, UsedImplicitly]
         private InputField _password;
 
+        [SerializeField, UsedImplicitly]
+        private GameObject _mainMenuPanel;
+
+
+        [UsedImplicitly]
+        public void Start()
+        {
+            if (ParseUser.CurrentUser != null)
+            {
+                ShowMainMenu();
+            }
+        }
+
+
         [UsedImplicitly]
         public void LoginAction()
         {
             StartCoroutine(LoginCoroutine());
         }
 
+        
         private IEnumerator LoginCoroutine()
         {
-            ParseUser.LogOut();
-
             var loginTask = ParseUser.LogInAsync(_email.text, _password.text).ContinueWith(task =>
             {
-                if (task.IsFaulted || task.IsCanceled)
+                if (!task.IsFaulted && !task.IsCanceled) return;
+
+                foreach (var exception in task.Exception.InnerExceptions)
                 {
-                    // The login failed. Check the error to see why.
-                    foreach (var exception in task.Exception.InnerExceptions)
-                    {
-                        Debug.LogError(exception.Message);
-                    }
+                    Debug.LogError(exception.Message);
                 }
             });
 
             while (!loginTask.IsCompleted) yield return null;
+
+            ShowMainMenu();
+        }
+
+        private void ShowMainMenu()
+        {
             Debug.Log("Login Successful");
             gameObject.SetActive(false);
-
+            _mainMenuPanel.SetActive(true);
         }
     }
 }
