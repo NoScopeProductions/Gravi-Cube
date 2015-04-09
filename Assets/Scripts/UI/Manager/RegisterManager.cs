@@ -59,7 +59,7 @@ namespace UI.Manager
             while (!signUpTask.IsCompleted) yield return null;
 
             Debug.Log("Sign Up Successful");
-            _loginPanel.SetActive(true);
+            _loginPanel.GetComponent<LoginManager>().Show();
             gameObject.SetActive(false);
         }
     }
