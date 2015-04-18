@@ -1,5 +1,6 @@
-﻿using JetBrains.Annotations;
-using Manager;
+﻿using System.Collections.Generic;
+using Game.Manager;
+using JetBrains.Annotations;
 using UnityEngine;
 
 namespace Game
