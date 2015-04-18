@@ -41,6 +41,7 @@ namespace Game
             if (_health <= 0)
             {
                 DestroyCube();
+                _gridManager.DestroyIslands();
             }
 
             AdjustCubeColor();
