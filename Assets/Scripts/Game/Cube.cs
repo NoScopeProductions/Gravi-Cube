@@ -9,20 +9,17 @@ namespace Game
     public class Cube : MonoBehaviour
     {
         private Renderer _renderer;
-
-        private int _health;
         private GridManager _gridManager;
 
+        public int Health { get; private set; }
         public Vector2 TilePosition { get; set; }
-
         public List<Cube> Neighbors { get; set; }
-
         public bool IsEdgeCube { private get; set; }
 
         [UsedImplicitly]
         void Start ()
         {
-            _health = IsEdgeCube ? 1 : 3;
+            Health = IsEdgeCube ? 1 : 3;
             _renderer = GetComponent<Renderer>();
             _gridManager = GameObject.Find("GridManager").GetComponent<GridManager>();
             AdjustCubeColor();
@@ -38,9 +35,9 @@ namespace Game
         */
         public void DecreaseHealth()
         {
-            Mathf.Clamp(--_health, 0, 3);
+            Mathf.Clamp(--Health, 0, 3);
 
-            if (_health <= 0)
+            if (Health <= 0)
             {
                 DestroyCube();
                 _gridManager.DestroyIslands();
