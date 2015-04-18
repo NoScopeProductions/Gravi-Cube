@@ -25,7 +25,6 @@ namespace Game
             _health = IsEdgeCube ? 1 : 3;
             _renderer = GetComponent<Renderer>();
             _gridManager = GameObject.Find("GridManager").GetComponent<GridManager>();
-
             AdjustCubeColor();
         }
 
@@ -35,17 +34,27 @@ namespace Game
             AdjustCubeColor();
         }
 
-        private void DecreaseHealth()
+        public void DecreaseHealth()
         {
-            Mathf.Clamp(--_health, -1, 3);
+            Mathf.Clamp(--_health, 0, 3);
 
             if (_health <= 0)
             {
-                _gridManager.Grid.Remove(gameObject);
-                Destroy(gameObject);
+                DestroyCube();
             }
 
             AdjustCubeColor();
+        }
+
+        public void DestroyCube()
+        {
+            foreach (var neighbor in Neighbors)
+            {
+                neighbor.Neighbors.Remove(this);
+            }
+
+            _gridManager.Grid.Remove(this);
+            gameObject.SetActive(false);
         }
 
         private void AdjustCubeColor()
