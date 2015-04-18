@@ -76,11 +76,5 @@ namespace Game
                     break;
             }
         }
-
-        [UsedImplicitly]
-        public void OnTriggerExit(Collider col)
-        {
-            DecreaseHealth();
-        }
     }
 }
