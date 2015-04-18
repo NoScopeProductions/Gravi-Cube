@@ -28,12 +28,14 @@ namespace Game
             AdjustCubeColor();
         }
 
+        // YAGNI ???
+        /*
         public void AddHealth()
         {
             Mathf.Clamp(++_health, -1, 3);
             AdjustCubeColor();
         }
-
+        */
         public void DecreaseHealth()
         {
             Mathf.Clamp(--_health, 0, 3);
