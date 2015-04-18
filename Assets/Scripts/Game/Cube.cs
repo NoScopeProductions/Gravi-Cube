@@ -12,6 +12,9 @@ namespace Game
         private int _health;
         private GridManager _gridManager;
 
+        public Vector2 TilePosition { get; set; }
+
+
         public bool IsEdgeCube { private get; set; }
 
         [UsedImplicitly]
