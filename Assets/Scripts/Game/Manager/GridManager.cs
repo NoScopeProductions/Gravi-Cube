@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using JetBrains.Annotations;
 using UnityEngine;
 
@@ -105,7 +106,7 @@ namespace Game.Manager
         {
             var cubesToDestroy = new List<Cube>();
 
-            foreach (var player in Players)
+            foreach (var player in Players.Where(p => p.State != Player.PlayerState.Dead))
             {
                 cubesToDestroy.AddRange( FindIslandsForPlayer(player) );
             }

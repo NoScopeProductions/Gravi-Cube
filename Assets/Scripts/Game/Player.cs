@@ -23,23 +23,21 @@ namespace Game
 
         private bool CanBeControlled { get; set; }
 
-        private enum PlayerState
+        public enum PlayerState
         {
             Moving, Stopped, Dead
         }
 
         [SerializeField]
-        private PlayerState _state;
+        public PlayerState State;
 
         [UsedImplicitly]
         public void Start()
         {
             CanBeControlled = true;
-
-            _state = PlayerState.Stopped;
-            //_input = new Vector2(0, 0);
+            State = PlayerState.Stopped;
+            
             _gridManager = GameObject.Find("GridManager").GetComponent<GridManager>();
-
             _gridManager.Players.Add(this);
         }
 
@@ -49,11 +47,61 @@ namespace Game
             if (!CanBeControlled) return;
             GetInput();
 
-            if (_state == PlayerState.Stopped)
+            if (State == PlayerState.Stopped)
             {
                 StartCoroutine(MovePlayer());
             }
             
+        }
+
+        private IEnumerator MovePlayer()
+        {
+            State = PlayerState.Moving;
+
+            var startPosition = transform.position;
+            var endPosition = GetTargetPosition(startPosition);
+
+            float moveTime = 0f;
+            while (moveTime < 1f)
+            {
+                moveTime += Time.deltaTime * _speed;
+                transform.position = Vector3.Lerp(startPosition, endPosition, Mathf.Clamp01(moveTime) );
+                yield return null;
+            }
+
+            State = PlayerState.Stopped;
+
+            var previousCube = _gridManager.GetCubeAtPosition(TilePosition);
+
+            // Update the player's TilePosition before calling DecreaseHealth on the previous cube
+            // Otherwise the FindIslands algorithm will start from the dead cube instead of the new one
+            TilePosition = _gridManager.GetTileCoordinatesFromWorldCoordinates(transform.position);
+
+            previousCube.DecreaseHealth();
+
+            transform.position = endPosition;
+
+            CheckFallen();
+        }
+
+        private void CheckFallen()
+        {
+            if (!_gridManager.Grid.Find(cube => TilePosition == cube.TilePosition && cube.Health > 0))
+            {
+                State = PlayerState.Dead;
+                //Death animation here
+            }
+        }
+
+        private Vector3 GetTargetPosition(Vector3 startPosition)
+        {
+            float endPosX = startPosition.x + GridManager.CubeScale*_input.x;
+            float endPosZ = startPosition.z + GridManager.CubeScale*_input.y;
+
+            var endPosition = new Vector3(endPosX, 1f, endPosZ);
+
+            //TODO: Check bounds and adjust endPosition if needed (do we want to do this?)
+            return endPosition;
         }
 
         private void GetInput()
@@ -78,57 +126,6 @@ namespace Game
                 _input.y = 0;
                 _input.x = 1;
             }
-        }
-
-        private IEnumerator MovePlayer()
-        {
-            _state = PlayerState.Moving;
-
-            var startPosition = transform.position;
-            var endPosition = GetTargetPosition(startPosition);
-
-            float moveTime = 0f;
-            while (moveTime < 1f)
-            {
-                moveTime += Time.deltaTime * _speed;
-                transform.position = Vector3.Lerp(startPosition, endPosition, Mathf.Clamp01(moveTime) );
-                yield return null;
-            }
-
-            _state = PlayerState.Stopped;
-
-            var previousCube = _gridManager.GetCubeAtPosition(TilePosition);
-
-            // Update the player's TilePosition before calling DecreaseHealth on the previous cube
-            // Otherwise the FindIslands algorithm will start from the dead cube instead of the new one
-            TilePosition = _gridManager.GetTileCoordinatesFromWorldCoordinates(transform.position);
-            previousCube.DecreaseHealth();
-
-            transform.position = endPosition;
-
-            CheckFallen();
-        }
-
-        private void CheckFallen()
-        {
-            var normalizedPos = transform.position;
-            normalizedPos.y = 0f;
-
-            if (!_gridManager.Grid.Find(cube => normalizedPos == cube.transform.position))
-            {
-                _state = PlayerState.Dead;
-            }
-        }
-
-        private Vector3 GetTargetPosition(Vector3 startPosition)
-        {
-            float endPosX = startPosition.x + GridManager.CubeScale*_input.x;
-            float endPosZ = startPosition.z + GridManager.CubeScale*_input.y;
-
-            var endPosition = new Vector3(endPosX, 1f, endPosZ);
-
-            //TODO: Check bounds and adjust endPosition if needed (do we want to do this?)
-            return endPosition;
         }
     }
 }

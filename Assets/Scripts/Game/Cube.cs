@@ -52,14 +52,21 @@ namespace Game
             {
                 neighbor.Neighbors.Remove(this);
             }
-
-            _gridManager.Grid.Remove(this);
-            gameObject.SetActive(false);
+            iTween.ShakeRotation(gameObject, new Vector3(10f,10f,10f), 2f);
+            iTween.MoveBy(gameObject, iTween.Hash("y",    -30f,
+                                                  "time",  10f,
+                                                  "delay", Random.Range(0.1f, 0.75f),
+                                                  
+                                                  "oncomplete",       "SetActive",
+                                                  "oncompleteparams",       false,
+                                                  "oncompletetarget",  this
+                                                  ));
+            iTween.FadeTo(gameObject, 0f, 3f);
         }
 
         private void AdjustCubeColor()
         {
-            switch (_health)
+            switch (Health)
             {
                 case  0:
                 case  1:
