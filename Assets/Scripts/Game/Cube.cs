@@ -15,6 +15,7 @@ namespace Game
 
         public Vector2 TilePosition { get; set; }
 
+        public List<Cube> Neighbors { get; set; }
 
         public bool IsEdgeCube { private get; set; }
 
