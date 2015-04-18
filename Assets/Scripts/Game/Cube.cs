@@ -61,7 +61,6 @@ namespace Game
         {
             switch (_health)
             {
-                case -1:
                 case  0:
                 case  1:
                     _renderer.material.color = Color.red;
