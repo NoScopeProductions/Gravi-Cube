@@ -134,6 +134,14 @@ Prefab:
       propertyPath: _speed
       value: 4
       objectReference: {fileID: 0}
+    - target: {fileID: 11480052, guid: 2c990fba1ae71d645ad4ae59286bb2de, type: 2}
+      propertyPath: _input.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 11480052, guid: 2c990fba1ae71d645ad4ae59286bb2de, type: 2}
+      propertyPath: _state
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 2c990fba1ae71d645ad4ae59286bb2de, type: 2}
   m_IsPrefabParent: 0
@@ -313,8 +321,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _cubePrefab: {fileID: 103726, guid: 75bd62ffd715bdd4282051a03ca7ea7d, type: 2}
-  _gridWidth: 24
-  _gridHeight: 24
+  _gridWidth: 12
+  _gridHeight: 12
 --- !u!4 &2090464795
 Transform:
   m_ObjectHideFlags: 0
